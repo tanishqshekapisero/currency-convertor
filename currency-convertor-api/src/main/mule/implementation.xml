@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<flow name="fetch-currency-flow" doc:id="3c483941-6e41-4959-ab08-81d6d48a19b0" >
+		<ee:transform doc:name="DW Setting Required Variables" doc:id="5c23b0af-ca2f-49ef-8b1d-ed0a60767d19" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+{
+}]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="to" ><![CDATA[%dw 2.0
+output text/plain
+---
+message.attributes.queryParams."to"]]></ee:set-variable>
+				<ee:set-variable variableName="from" ><![CDATA[%dw 2.0
+output text/plain
+---
+message.attributes.queryParams."from" default "USD"]]></ee:set-variable>
+				<ee:set-variable variableName="value" ><![CDATA[%dw 2.0
+output text/plain
+---
+message.attributes.queryParams."value"]]></ee:set-variable>
+				<ee:set-variable variableName="app_id" ><![CDATA[%dw 2.0
+output text/plain
+---
+message.attributes.headers."app_id"]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<http:request method="GET" doc:name="GET Request to Open Exchange" doc:id="aa4c9b77-dc6a-458b-b0f7-72302fbc792e" config-ref="HTTP_Request_configuration" path="/latest.json">
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"app_id" : "${secure::encrypted.app_id}"
+}]]]></http:query-params>
+		</http:request>
+		<ee:transform doc:name="DW Setting the output in the required format" doc:id="0c7ea068-99b4-4074-a554-c7f9b976ecb7" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+var rate = (payload.rates[vars.to as String] as Number) / (payload.rates[vars.from as String] as Number)
+---
+{
+"converted_amount": ((rate as Number) * (vars.value as Number)) as String {format: "#.00"} as Number,
+"rate": rate
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="2c287264-dde8-4798-a0d0-173746cb923c"/>
+		
+	</flow>
+</mule>

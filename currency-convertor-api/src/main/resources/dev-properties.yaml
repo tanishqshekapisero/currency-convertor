@@ -1,0 +1,7 @@
+currency:
+  host: "openexchangerates.org"
+  port: "443"
+  basepath: "/api"
+  
+encrypted:
+  app_id: "![yEgx3NVJOOS2xcHynvkWF1cSOFX0p/HZ9+QuMM1ZNzZZoNYkk3DD7A==]"

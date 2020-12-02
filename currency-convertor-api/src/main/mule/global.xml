@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd">
+	<configuration-properties doc:name="Configuration properties" doc:id="5a5412df-028a-453f-aaf2-161b06310e3f" file="${env}-properties.yaml" />
+	<global-property doc:name="Global Property" doc:id="477a8bb9-634f-4fb0-b3f0-87328cf79456" name="env" value="dev" />
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="302a7aa4-cec9-4e1b-bb43-b236f1effb5a" basePath="${currency.basepath}" >
+		<http:request-connection host="${currency.host}" port="${currency.port}" protocol="HTTPS"/>
+	</http:request-config>
+	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="5d1e41a7-ecfe-4309-89e6-89d5db69ba9f" file="${env}-properties.yaml" key="${mule.key}" >
+		<secure-properties:encrypt algorithm="Blowfish" />
+	</secure-properties:config>
+	<global-property doc:name="Global Property" doc:id="73aa1bcb-6148-4074-80a7-d8bbc6bfeb9e" name="mule.key" value="mulesoft" />
+	
+</mule>
